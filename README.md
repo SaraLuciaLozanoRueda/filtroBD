@@ -665,21 +665,349 @@ sara lucia lozano rueda
 
 9. Listar las películas y los idiomas en los que están disponibles.
 
+   ```sql
+   SELECT p.titulo, i.nombre FROM pelicula AS p
+   INNER JOIN idioma AS i ON p.id_idioma  = i.id_idioma
+   LIMIT 50;
+   /*
+   +-----------------------------+---------+
+   | titulo                      | nombre  |
+   +-----------------------------+---------+
+   | ACADEMY DINOSAUR            | English |
+   | ACE GOLDFINGER              | English |
+   | ADAPTATION HOLES            | English |
+   | AFFAIR PREJUDICE            | English |
+   | AFRICAN EGG                 | English |
+   | AGENT TRUMAN                | English |
+   | AIRPLANE SIERRA             | English |
+   | AIRPORT POLLOCK             | English |
+   | ALABAMA DEVIL               | English |
+   | ALADDIN CALENDAR            | English |
+   | ALAMO VIDEOTAPE             | English |
+   | ALASKA PHANTOM              | English |
+   | ALI FOREVER                 | English |
+   | ALICE FANTASIA              | English |
+   | ALIEN CENTER                | English |
+   | ALLEY EVOLUTION             | English |
+   | ALONE TRIP                  | English |
+   | ALTER VICTORY               | English |
+   | AMADEUS HOLY                | English |
+   | AMELIE HELLFIGHTERS         | English |
+   | AMERICAN CIRCUS             | English |
+   | AMISTAD MIDSUMMER           | English |
+   | ANACONDA CONFESSIONS        | English |
+   | ANALYZE HOOSIERS            | English |
+   | ANGELS LIFE                 | English |
+   | ANNIE IDENTITY              | English |
+   | ANONYMOUS HUMAN             | English |
+   | ANTHEM LUKE                 | English |
+   | ANTITRUST TOMATOES          | English |
+   | ANYTHING SAVANNAH           | English |
+   | APACHE DIVINE               | English |
+   | APOCALYPSE FLAMINGOS        | English |
+   | APOLLO TEEN                 | English |
+   | ARABIA DOGMA                | English |
+   | ARACHNOPHOBIA ROLLERCOASTER | English |
+   | ARGONAUTS TOWN              | English |
+   | ARIZONA BANG                | English |
+   | ARK RIDGEMONT               | English |
+   | ARMAGEDDON LOST             | English |
+   | ARMY FLINTSTONES            | English |
+   | ARSENIC INDEPENDENCE        | English |
+   | ARTIST COLDBLOODED          | English |
+   | ATLANTIS CAUSE              | English |
+   | ATTACKS HATE                | English |
+   | ATTRACTION NEWTON           | English |
+   | AUTUMN CROW                 | English |
+   | BABY HALL                   | English |
+   | BACKLASH UNDEFEATED         | English |
+   | BADMAN DAWN                 | English |
+   | BAKED CLEOPATRA             | English |
+   +-----------------------------+---------+
+   */
+   ```
+
+   
+
 10. Encontrar todos los empleados y los almacenes que gestionan.
-    Obtener los títulos de las películas que nunca han sido
+
+    ```SQL
+    SELECT CONCAT_WS(' ', e.nombre, e.apellidos) AS nombre_empleado,
+    a.id_almacen FROM almacen AS a
+    INNER JOIN empleado AS e ON e.id_empleado = a.id_empleado_jefe;
+    /*
+    +-----------------+------------+
+    | nombre_empleado | id_almacen |
+    +-----------------+------------+
+    | Jon Stephens    |          2 |
+    | Ringo Rooksby   |          1 |
+    +-----------------+------------+
+    */
+    ```
+
+    
+
+11. Obtener los títulos de las películas que nunca han sido
     alquiladas.
 
-11. Listar los empleados que trabajan en el mismo almacén que el
+    ```SQL
+    SELECT p.titulo FROM pelicula AS p 
+    LEFT JOIN alquiler AS a ON a.id_pelicula = p.id_pelicula
+    WHERE a.id_pelicula IS NULL
+    LIMIT 50;
+    ```
+
+    
+
+12. Listar los empleados que trabajan en el mismo almacén que el
     empleado con id_empleado = 1.
 
-12. Encontrar el nombre de las ciudades que no tienen ningún
+    ```SQL
+    SELECT e.id_empleado, 
+    CONCAT_WS(' ', e.nombre, e.apellidos) AS nombre_empleado FROM empleado AS e 
+    WHERE e.id_almacen = (
+    	SELECT a.id_almacen FROM empleado AS em 
+        INNER JOIN almacen AS a ON a.id_almacen = em.id_almacen
+        WHERE em.id_empleado = 1
+    );
+    
+    /*
+    +-------------+-----------------+
+    | id_empleado | nombre_empleado |
+    +-------------+-----------------+
+    |           1 | Mike Hillyer    |
+    |           2 | Jon Stephens    |
+    |           3 | Pepe Spilberg   |
+    +-------------+-----------------+
+    */
+    ```
+
+    
+
+13. Encontrar el nombre de las ciudades que no tienen ningún
     cliente registrado.
 
-13. Obtener los nombres y apellidos de los actores que han
+    ```sql
+    SELECT nombre FROM ciudad 
+    WHERE id_ciudad NOT IN (
+    	SELECT ci.id_ciudad FROM ciudad AS ci
+        INNER JOIN direccion AS d ON d.id_ciudad = ci.id_ciudad
+        INNER JOIN cliente AS cl ON cl.id_direccion = d.id_direccion
+    )
+    LIMIT 50;
+    
+    /*
+    | nombre                  |
+    +-------------------------+
+    | A Corua (La Corua)      |
+    | Abha                    |
+    | Abu Dhabi               |
+    | Acua                    |
+    | Adana                   |
+    | Addis Abeba             |
+    | Aden                    |
+    | Adoni                   |
+    | Ahmadnagar              |
+    | Akishima                |
+    | Akron                   |
+    | al-Ayn                  |
+    | al-Hawiya               |
+    | al-Manama               |
+    | al-Qadarif              |
+    | al-Qatif                |
+    | Allappuzha (Alleppey)   |
+    | Allende                 |
+    | Almirante Brown         |
+    | Alvorada                |
+    | Ambattur                |
+    | Amersfoort              |
+    | Amroha                  |
+    | Angra dos Reis          |
+    | Anpolis                 |
+    | Antofagasta             |
+    | Aparecida de Goinia     |
+    | Apeldoorn               |
+    | Araatuba                |
+    | Arecibo                 |
+    | Arlington               |
+    | Ashdod                  |
+    | Ashgabat                |
+    | Ashqelon                |
+    | Asuncin                 |
+    | Atinsk                  |
+    | Atlixco                 |
+    | Augusta-Richmond County |
+    | Aurora                  |
+    | Avellaneda              |
+    | Bag                     |
+    | Baha Blanca             |
+    | Baicheng                |
+    | Baiyin                  |
+    | Baku                    |
+    | Balaiha                 |
+    | Balikesir               |
+    | Balurghat               |
+    | Bamenda                 |
+    | Bandar Seri Begawan     |
+    +-------------------------+
+    */
+    ```
+
+    
+
+14. Obtener los nombres y apellidos de los actores que han
     participado en más de 10 películas.(having)
 
-14. Encontrar los nombres y apellidos de los clientes que han
+    ```SQL
+    SELECT CONCAT_WS(' ', a.nombre, a.apellidos) AS nombre_actor,
+    COUNT(p.id_pelicula) AS numero_peliculas
+    FROM actor AS a 
+    INNER JOIN pelicula_actor AS pa ON pa.id_actor = a.id_actor
+    INNER JOIN pelicula AS p ON pa.id_pelicula = p.id_pelicula
+    GROUP BY nombre_actor
+    HAVING numero_peliculas > 10
+    LIMIT 50;
+    
+    /*
+    +---------------------+------------------+
+    | nombre_actor        | numero_peliculas |
+    +---------------------+------------------+
+    | PENELOPE GUINESS    |               19 |
+    | NICK WAHLBERG       |               25 |
+    | ED CHASE            |               22 |
+    | JENNIFER DAVIS      |               22 |
+    | JOHNNY LOLLOBRIGIDA |               29 |
+    | BETTE NICHOLSON     |               20 |
+    | GRACE MOSTEL        |               30 |
+    | MATTHEW JOHANSSON   |               20 |
+    | JOE SWANK           |               25 |
+    | CHRISTIAN GABLE     |               22 |
+    | ZERO CAGE           |               25 |
+    | KARL BERRY          |               31 |
+    | UMA WOOD            |               35 |
+    | VIVIEN BERGEN       |               30 |
+    | CUBA OLIVIER        |               28 |
+    | FRED COSTNER        |               27 |
+    | HELEN VOIGHT        |               32 |
+    | DAN TORN            |               22 |
+    | BOB FAWCETT         |               25 |
+    | LUCILLE TRACY       |               30 |
+    | KIRSTEN PALTROW     |               27 |
+    | ELVIS MARX          |               26 |
+    | SANDRA KILMER       |               37 |
+    | CAMERON STREEP      |               24 |
+    | KEVIN BLOOM         |               21 |
+    | RIP CRAWFORD        |               33 |
+    | JULIA MCQUEEN       |               33 |
+    | WOODY HOFFMAN       |               31 |
+    | ALEC WAYNE          |               29 |
+    | SANDRA PECK         |               19 |
+    | SISSY SOBIESKI      |               18 |
+    | TIM HACKMAN         |               23 |
+    | MILLA PECK          |               24 |
+    | AUDREY OLIVIER      |               25 |
+    | JUDY DEAN           |               15 |
+    | BURT DUKAKIS        |               29 |
+    | VAL BOLGER          |               35 |
+    | TOM MCKELLEN        |               25 |
+    | GOLDIE BRODY        |               28 |
+    | JOHNNY CAGE         |               29 |
+    | JODIE DEGENERES     |               29 |
+    | TOM MIRANDA         |               27 |
+    | KIRK JOVOVICH       |               26 |
+    | NICK STALLONE       |               30 |
+    | REESE KILMER        |               32 |
+    | PARKER GOLDBERG     |               24 |
+    | JULIA BARRYMORE     |               24 |
+    | FRANCES DAY-LEWIS   |               26 |
+    | ANNE CRONYN         |               27 |
+    | NATALIE HOPKINS     |               32 |
+    +---------------------+------------------+
+    */
+    ```
+
+    
+
+15. Encontrar los nombres y apellidos de los clientes que han
     realizado un pago mayor a 100.
 
-15. Listar los títulos de las películas lanzadas en el mismo año que
+    ```sql
+    SELECT CONCAT_WS(' ', c.nombre, c.apellidos) AS nombre_cliente,
+    pa.total FROM cliente AS c
+    INNER JOIN pago AS pa ON pa.id_cliente = c.id_cliente 
+    WHERE pa.total > 100
+    LIMIT 50;
+    
+    /*Empty set (0,01 sec)*/
+    ```
+
+    
+
+16. Listar los títulos de las películas lanzadas en el mismo año que
     la película con id_pelicula = 2.
+
+    ```sql
+    SELECT titulo FROM pelicula 
+    WHERE anyo_lanzamiento = (
+    SELECT anyo_lanzamiento FROM pelicula
+    WHERE id_pelicula = 2
+    )
+    LIMIT 50;
+    
+    /*+-----------------------------+
+    | titulo                      |
+    +-----------------------------+
+    | ACADEMY DINOSAUR            |
+    | ACE GOLDFINGER              |
+    | ADAPTATION HOLES            |
+    | AFFAIR PREJUDICE            |
+    | AFRICAN EGG                 |
+    | AGENT TRUMAN                |
+    | AIRPLANE SIERRA             |
+    | AIRPORT POLLOCK             |
+    | ALABAMA DEVIL               |
+    | ALADDIN CALENDAR            |
+    | ALAMO VIDEOTAPE             |
+    | ALASKA PHANTOM              |
+    | ALI FOREVER                 |
+    | ALICE FANTASIA              |
+    | ALIEN CENTER                |
+    | ALLEY EVOLUTION             |
+    | ALONE TRIP                  |
+    | ALTER VICTORY               |
+    | AMADEUS HOLY                |
+    | AMELIE HELLFIGHTERS         |
+    | AMERICAN CIRCUS             |
+    | AMISTAD MIDSUMMER           |
+    | ANACONDA CONFESSIONS        |
+    | ANALYZE HOOSIERS            |
+    | ANGELS LIFE                 |
+    | ANNIE IDENTITY              |
+    | ANONYMOUS HUMAN             |
+    | ANTHEM LUKE                 |
+    | ANTITRUST TOMATOES          |
+    | ANYTHING SAVANNAH           |
+    | APACHE DIVINE               |
+    | APOCALYPSE FLAMINGOS        |
+    | APOLLO TEEN                 |
+    | ARABIA DOGMA                |
+    | ARACHNOPHOBIA ROLLERCOASTER |
+    | ARGONAUTS TOWN              |
+    | ARIZONA BANG                |
+    | ARK RIDGEMONT               |
+    | ARMAGEDDON LOST             |
+    | ARMY FLINTSTONES            |
+    | ARSENIC INDEPENDENCE        |
+    | ARTIST COLDBLOODED          |
+    | ATLANTIS CAUSE              |
+    | ATTACKS HATE                |
+    | ATTRACTION NEWTON           |
+    | AUTUMN CROW                 |
+    | BABY HALL                   |
+    | BACKLASH UNDEFEATED         |
+    | BADMAN DAWN                 |
+    | BAKED CLEOPATRA             |
+    +-----------------------------+read*/
+    ```
+
+    
